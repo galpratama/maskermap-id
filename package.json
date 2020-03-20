@@ -1,0 +1,27 @@
+{
+  "name": "maskermap-id",
+  "version": "1.0.0",
+  "description": "Masker finder for indonesian people",
+  "author": "Galih Pratama",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/dotenv": "^1.4.0",
+    "@nuxtjs/pwa": "^3.0.0-0",
+    "nuxt": "^2.0.0",
+    "nuxt-leaflet": "0.0.21"
+  },
+  "devDependencies": {
+    "@nuxtjs/moment": "^1.6.0",
+    "@nuxtjs/vuetify": "^1.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1"
+  }
+}
