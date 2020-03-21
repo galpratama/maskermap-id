@@ -19,15 +19,26 @@
                   <v-text-field
                     label="Cari lokasi masker..."
                     solo
-                    outlined
+                    clearable
+                    :loading="searchLoading"
                     v-model="search"
+                    @input="debounceSearchPlaces()"
+                    @keydown.enter="getPlaces()"
                   ></v-text-field>
-                  <v-card class="mx-auto" max-width="400" tile>
+                  <v-card
+                    class="mx-auto"
+                    max-width="400"
+                    tile
+                    v-if="searchPlaces"
+                  >
                     <v-list three-line>
                       <v-list-item-group>
                         <v-list-item
-                          v-for="place in filteredPlaces"
+                          v-for="place in searchPlaces"
                           :key="place.id"
+                          @click="
+                            $refs['marker-' + place.id][0].mapObject.openPopup()
+                          "
                         >
                           <v-list-item-content>
                             <v-list-item-title class="font-weight-black">
@@ -77,6 +88,7 @@
             <l-marker
               :lat-lng="getLatLng(place.lat, place.long)"
               :key="place.id"
+              :ref="'marker-' + place.id"
             >
               <l-popup>
                 <div @click="innerClick">
@@ -118,12 +130,16 @@
 
 <script>
 import { latLng } from 'leaflet'
+import _ from 'lodash'
 
 export default {
   data() {
     return {
       places: [],
+      searchPlaces: null,
+      searchLoading: false,
       search: '',
+      isTyping: false,
       zoom: 15,
       center: latLng(-6.8685959, 107.5804061),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -140,12 +156,34 @@ export default {
     }
   },
   async asyncData({ $axios }) {
-    const places = await $axios.$get(
-      'https://covid19-api.yggdrasil.id/maskmap/places'
-    )
-    return { places }
+    try {
+      const places = await $axios.$get(
+        'https://covid19-api.yggdrasil.id/maskmap/places'
+      )
+      return { places }
+    } catch (error) {
+      return { places: null }
+    }
+  },
+  created() {
+    this.debounceSearchPlaces = _.debounce(this.getPlaces, 200)
   },
   methods: {
+    async getPlaces() {
+      this.searchLoading = true
+      try {
+        const places = await this.$axios.$post(
+          'https://covid19-api.yggdrasil.id/maskmap/places',
+          {
+            name: this.search
+          }
+        )
+        this.searchPlaces = places
+      } catch (error) {
+        this.searchPlaces = ''
+      }
+      this.searchLoading = false
+    },
     getLatLng(lat, lng) {
       return latLng(lat, lng)
     },
