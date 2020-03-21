@@ -150,7 +150,7 @@ export default {
       return latLng(lat, lng)
     },
     toRupiah(number) {
-      return number.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+      return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom
